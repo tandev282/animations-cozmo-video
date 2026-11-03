@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cozmo Animation Studio & Video Viewer</title>
+  <meta name="description" content="Trình xem video và tra cứu các hành vi, hoạt ảnh của Robot Cozmo trực quan và chuyên nghiệp.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="brand-group">
+        <div class="logo-wrapper">
+          <svg class="robot-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+            <circle cx="12" cy="5" r="2"></circle>
+            <path d="M12 7v4"></path>
+            <line x1="8" y1="16" x2="8.01" y2="16"></line>
+            <line x1="16" y1="16" x2="16.01" y2="16"></line>
+          </svg>
+          <span class="pulse-indicator"></span>
+        </div>
+        <div class="brand-text">
+          <h1>Cozmo Studio</h1>
+          <span class="badge-sub">Animation Video Player</span>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-pill">
+          <span class="stat-dot green"></span>
+          <span class="stat-label">Videos:</span>
+          <strong id="stat-videos-count">348</strong>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-dot cyan"></span>
+          <span class="stat-label">Tổng Animations:</span>
+          <strong id="stat-total-count">790</strong>
+        </div>
+      </div>
+
+      <!-- Video Source Switcher (GitHub CDN / GitHub Raw) -->
+      <div class="header-source-picker">
+        <label for="video-source-select" class="source-picker-label">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          </svg>
+          <span>Nguồn:</span>
+        </label>
+        <select id="video-source-select" class="source-select" title="Chọn nguồn video (trực tiếp từ GitHub giúp hosting siêu nhẹ)">
+          <option value="jsdelivr" selected>GitHub CDN (Nhanh, Cloudflare)</option>
+          <option value="github-raw">GitHub Raw (Trực tiếp)</option>
+        </select>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-shortcuts" class="icon-btn" title="Phím tắt hỗ trợ (?)">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M18 16H6"></path>
+          </svg>
+          <span class="btn-text">Phím tắt</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="main-layout">
+      <!-- Left Sidebar: Animations List & Filters -->
+      <aside class="sidebar-panel">
+        <!-- Search & Filter Controls -->
+        <div class="sidebar-header">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="search-input" placeholder="Tìm theo tên, ID, hoặc nhóm... (phím /)" autocomplete="off">
+            <button id="btn-clear-search" class="clear-btn" title="Xóa tìm kiếm" style="display: none;">&times;</button>
+          </div>
+
+          <!-- Quick Filter Pills -->
+          <div class="filter-categories-wrapper">
+            <div class="filter-chips" id="filter-chips">
+              <button class="chip-btn active" data-filter="has-video">Có Video <span class="chip-count" id="chip-count-video">348</span></button>
+              <button class="chip-btn" data-filter="all">Tất cả <span class="chip-count" id="chip-count-all">790</span></button>
+              <button class="chip-btn" data-filter="favorites">Yêu thích <span class="chip-count" id="chip-count-fav">0</span></button>
+            </div>
+          </div>
+
+          <!-- Group/Category Filter Dropdown & Sort -->
+          <div class="filter-controls-row">
+            <div class="select-group">
+              <label for="group-select">Nhóm cảm xúc:</label>
+              <select id="group-select">
+                <option value="all">Tất cả các nhóm</option>
+              </select>
+            </div>
+            <div class="select-group">
+              <label for="sort-select">Sắp xếp:</label>
+              <select id="sort-select">
+                <option value="id-asc">ID tăng dần (#1 -> #...)</option>
+                <option value="id-desc">ID giảm dần</option>
+                <option value="name-asc">Tên (A -> Z)</option>
+                <option value="group-asc">Nhóm cảm xúc</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- List Result Summary -->
+          <div class="list-summary-bar">
+            <span id="results-count-text">Hiển thị 348 hoạt ảnh</span>
+            <span class="keyboard-tip">Dùng ↑ / ↓ để chọn</span>
+          </div>
+        </div>
+
+        <!-- Scrollable List of Animations -->
+        <div class="anim-list-container" id="anim-list-container">
+          <div class="anim-list" id="anim-list">
+            <!-- Dynamic items rendered via JS -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Main: Video Player & Details Deck -->
+      <section class="player-panel">
+        <!-- Player Theater Container -->
+        <div class="theater-card">
+          <div class="video-container" id="video-container">
+            <div class="ambient-glow" id="ambient-glow"></div>
+            
+            <video id="cozmo-video" playsinline preload="auto">
+              Trình duyệt của bạn không hỗ trợ thẻ video HTML5.
+            </video>
+
+            <!-- Video Overlay for states / Play Button -->
+            <div class="video-overlay" id="video-overlay">
+              <div class="play-pulse-btn" id="btn-overlay-play">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Loading Spinner State -->
+            <div class="video-loader" id="video-loader" style="display: none;">
+              <div class="loader-spinner"></div>
+              <div class="loader-text-group">
+                <span class="loader-text">Đang tải video...</span>
+                <span class="loader-subtext" id="loader-subtext">Từ GitHub CDN</span>
+              </div>
+            </div>
+
+            <!-- Video Load Error State -->
+            <div class="video-error-state" id="video-error-state" style="display: none;">
+              <div class="error-icon">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+              <h3 id="error-title">Không thể phát video từ nguồn hiện tại</h3>
+              <p id="error-message">Đã gặp sự cố kết nối mạng hoặc nguồn video không phản hồi. Bạn có thể thử lại hoặc đổi nguồn video sang GitHub Raw.</p>
+              <div class="error-actions">
+                <button id="btn-retry-video" class="retry-btn">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 4v6h6M23 20v-6h-6"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                  </svg>
+                  <span>Thử lại</span>
+                </button>
+                <a id="btn-open-github" class="github-btn" href="#" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                  </svg>
+                  <span>Mở file trên GitHub</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- No Video Fallback State -->
+            <div class="no-video-state" id="no-video-state" style="display: none;">
+              <div class="no-video-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M15 10l5-5v14l-5-5"></path>
+                  <rect x="2" y="6" width="13" height="12" rx="2"></rect>
+                  <line x1="2" y1="2" x2="22" y2="22"></line>
+                </svg>
+              </div>
+              <h3>Không có video trong bộ dữ liệu</h3>
+              <p>Hoạt ảnh này thuộc danh mục mở rộng của SDK (IDs 349-790) và chưa được quay video trong bộ dữ liệu này.</p>
+              <div class="no-video-tags">
+                <span>Vẫn có thể gọi bằng Python Cozmo SDK trên robot thật</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Controls Deck -->
+          <div class="playback-controls-deck">
+            <!-- Progress Bar -->
+            <div class="timeline-bar-wrapper" id="timeline-wrapper">
+              <div class="timeline-bar" id="timeline-bar">
+                <div class="timeline-played" id="timeline-played"></div>
+              </div>
+            </div>
+
+            <div class="controls-main-row">
+              <!-- Left Action Group -->
+              <div class="ctrl-group left">
+                <button id="btn-prev" class="ctrl-btn secondary" title="Hoạt ảnh trước (Phím B hoặc ←)">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                  </svg>
+                  <span>Trước</span>
+                </button>
+
+                <button id="btn-play-pause" class="ctrl-btn primary" title="Phát/Tạm dừng (Phím Space)">
+                  <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                  </svg>
+                  <span id="play-btn-text">Phát</span>
+                </button>
+
+                <button id="btn-replay" class="ctrl-btn secondary" title="Phát lại (Phím R)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 4v6h6M23 20v-6h-6"/>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                  </svg>
+                  <span>Lặp lại</span>
+                </button>
+
+                <button id="btn-next" class="ctrl-btn secondary" title="Hoạt ảnh kế tiếp (Phím N hoặc →)">
+                  <span>Tiếp</span>
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                  </svg>
+                </button>
+
+                <div class="time-display">
+                  <span id="current-time">00:00.0</span> / <span id="total-time">00:00.0</span>
+                </div>
+              </div>
+
+              <!-- Right Options Group -->
+              <div class="ctrl-group right">
+                <!-- Speed Selector -->
+                <div class="speed-control">
+                  <label for="playback-speed">Tốc độ:</label>
+                  <select id="playback-speed">
+                    <option value="0.25">0.25x (Rất chậm)</option>
+                    <option value="0.5">0.5x (Chậm)</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1.0x (Chuẩn)</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2.0x (Nhanh)</option>
+                  </select>
+                </div>
+
+                <!-- Auto Next Switch -->
+                <label class="toggle-control" title="Tự động chuyển sang hoạt ảnh kế tiếp khi video kết thúc">
+                  <input type="checkbox" id="auto-next-toggle" checked>
+                  <span class="toggle-slider"></span>
+                  <span class="toggle-text">Tự chuyển tiếp</span>
+                </label>
+
+                <!-- Loop Switch -->
+                <label class="toggle-control" title="Lặp lại video hiện tại">
+                  <input type="checkbox" id="loop-toggle">
+                  <span class="toggle-slider"></span>
+                  <span class="toggle-text">Lặp vô tận</span>
+                </label>
+
+                <!-- Fullscreen Button -->
+                <button id="btn-fullscreen" class="ctrl-btn-icon" title="Toàn màn hình (Phím F)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Animation Information & Code Deck -->
+        <div class="details-card">
+          <div class="details-top">
+            <div class="details-header-left">
+              <div class="id-tag-row">
+                <span class="anim-id-badge" id="detail-id">#1</span>
+                <span class="group-pill" id="detail-group">admire</span>
+                <span class="duration-badge" id="detail-duration">⏱ 00:04.5</span>
+                <span class="video-status-badge" id="detail-video-status">● Phát từ GitHub CDN</span>
+                <a id="detail-github-link" class="github-badge-link" href="https://github.com/cozmo4hri/animations/tree/master/animation-set" target="_blank" rel="noopener" title="Xem video gốc trên GitHub">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                  </svg>
+                  <span>Xem trên GitHub ↗</span>
+                </a>
+              </div>
+              <h2 class="anim-full-name" id="detail-name">anim_reacttoblock_admirecubetower_01</h2>
+            </div>
+
+            <div class="details-header-actions">
+              <button id="btn-favorite-toggle" class="action-btn" title="Đánh dấu yêu thích">
+                <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span id="fav-btn-text">Yêu thích</span>
+              </button>
+
+              <button id="btn-copy-name" class="action-btn" title="Sao chép tên animation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Sao chép tên</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Keyboard Shortcuts -->
+    <div class="modal-backdrop" id="shortcuts-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M18 16H6"></path>
+            </svg>
+            <h3>Danh sách phím tắt hỗ trợ</h3>
+          </div>
+          <button id="btn-close-modal" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="shortcuts-grid">
+            <div class="shortcut-item">
+              <kbd>Space</kbd>
+              <span>Phát / Tạm dừng video</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>N</kbd> hoặc <kbd>→</kbd>
+              <span>Chuyển sang hoạt ảnh kế tiếp (Next)</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>B</kbd> hoặc <kbd>←</kbd>
+              <span>Quay lại hoạt ảnh trước (Back)</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>R</kbd>
+              <span>Phát lại video hiện tại (Replay)</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>↑</kbd> / <kbd>↓</kbd>
+              <span>Duyệt danh sách hoạt ảnh bên trái</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>F</kbd>
+              <span>Bật / Tắt toàn màn hình</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>M</kbd>
+              <span>Tắt / Bật tiếng</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>/</kbd>
+              <span>Nhảy nhanh vào ô tìm kiếm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="toast-notification">
+      <span class="toast-icon">✓</span>
+      <span class="toast-msg" id="toast-msg">Đã sao chép!</span>
+    </div>
+  </div>
+
+  <!-- Data Script (Offline Fallback & Server Compatible) -->
+  <script src="data.js"></script>
+  <!-- Main Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
