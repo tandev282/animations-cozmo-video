@@ -203,7 +203,7 @@
     } else {
       // Fallback: try fetching data from anim_record.csv
       try {
-        const resp = await fetch('anim_record.csv');
+        const resp = await fetch('data/anim_record.csv');
         const text = await resp.text();
         const lines = text.split('\n');
         animations = [];

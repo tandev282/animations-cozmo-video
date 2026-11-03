@@ -1,8 +1,12 @@
 import csv
 import json
+import os
 
-csv_path = 'anim_record.csv'
-output_js = 'data.js'
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+
+csv_path = os.path.join(PROJECT_ROOT, 'data', 'anim_record.csv')
+output_js = os.path.join(PROJECT_ROOT, 'assets', 'js', 'data.js')
 
 # Online sources from https://github.com/cozmo4hri/animations/tree/master/animation-set
 CDN_BASE = "https://cdn.jsdelivr.net/gh/cozmo4hri/animations@master/animation-set"

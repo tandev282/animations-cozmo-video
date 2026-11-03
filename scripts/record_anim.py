@@ -1,9 +1,15 @@
 import cozmo
 import getopt
+import os
 #import msvcrt
 import sys
 import time
 from datetime import datetime
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+ANIM_RECORD_CSV = os.path.join(PROJECT_ROOT, 'data', 'anim_record.csv')
+ALL_ANIM_RECORD_CSV = os.path.join(PROJECT_ROOT, 'data', 'all_anim_record.csv')
 
 LIST_TYPE_INDEX = 'index'
 LIST_TYPE_NAME = 'name'
@@ -100,7 +106,7 @@ def anim_create_master_record(robot: cozmo.robot.Robot):
     except:
         pass
     
-    with open('all_anim_record.csv', "w") as fp:
+    with open(ALL_ANIM_RECORD_CSV, 'w') as fp:
         # record the anims
         fp.write("Animation id, Animation name, Animation group, Play time\n")
         count = 1
@@ -118,7 +124,7 @@ def cozmo_behaviour_display(robot: cozmo.robot.Robot ):
     
     quit_classifier = False
     
-    with open('anim_record.csv', "r") as fp:
+    with open(ANIM_RECORD_CSV, 'r') as fp:
         contents = fp.readlines()
     
     anim_index = 0
@@ -196,7 +202,7 @@ def cozmo_behaviour_from_list(robot: cozmo.robot.Robot ):
         for anim in play_from_list:
             play_list.append(anim.strip("'").strip('"').strip())
     elif list_type == LIST_TYPE_INDEX:
-        with open('anim_record.csv', "r") as fp:
+        with open(ANIM_RECORD_CSV, 'r') as fp:
             contents = fp.readlines()
         for idx in play_from_list:
             try:
