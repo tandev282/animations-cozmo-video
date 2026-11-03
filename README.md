@@ -1,5 +1,13 @@
 # Cozmo Animations & Animation Studio
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-2ea44f?style=for-the-badge&logo=github)](https://tandev282.github.io/animations-cozmo-video/)
+[![Animations](https://img.shields.io/badge/Total_Animations-790-blue?style=for-the-badge)](https://tandev282.github.io/animations-cozmo-video/)
+[![Videos](https://img.shields.io/badge/Recorded_Videos-348-orange?style=for-the-badge)](https://tandev282.github.io/animations-cozmo-video/)
+
+> 🚀 **Trải nghiệm nhanh ứng dụng trực tuyến (Live Demo):**  
+> 👉 [**https://tandev282.github.io/animations-cozmo-video/**](https://tandev282.github.io/animations-cozmo-video/)  
+> *(Xem và tra cứu trực tiếp toàn bộ 790 animations & 348 video streaming tốc độ cao mà không cần cài đặt)*
+
 This repository contains the recordings for 348 Cozmo animations (app version 1.5.0), the database of all 790 animations, Python SDK scripts to run animations on a physical Cozmo robot, and a modern Web Studio & Video Viewer.
 
 Recordings were made in Summer 2017. The complete list of animations can be found in [`data/anim_record.csv`](data/anim_record.csv).
@@ -35,6 +43,8 @@ animations-cozmo-video/
 
 ## 🌐 Cozmo Animation Studio & Web Viewer (Online Streaming)
 
+👉 **Truy cập trực tiếp tại:** [**https://tandev282.github.io/animations-cozmo-video/**](https://tandev282.github.io/animations-cozmo-video/)
+
 Ứng dụng web xem video và tra cứu 790 hoạt ảnh Cozmo:
 - **Tối ưu dung lượng Hosting:** Thay vì phải tải và lưu toàn bộ thư mục `animation-set/` nặng **~378 MB** lên hosting, web player hỗ trợ phát trực tiếp video từ kho chính thức [cozmo4hri/animations](https://github.com/cozmo4hri/animations/tree/master/animation-set) qua CDN tốc độ cao (Cloudflare / jsDelivr).
 - **Hỗ trợ 2 nguồn phát video trực tuyến từ GitHub:**
@@ -42,14 +52,15 @@ animations-cozmo-video/
   2. **GitHub Raw (Trực tiếp):** Phát trực tiếp từ raw.githubusercontent.com.
 - **Tự động chuyển nguồn dự phòng:** Nếu một nguồn gặp sự cố mạng, player sẽ tự động thử nguồn thay thế để không làm gián đoạn trải nghiệm người dùng.
 
-### Cách chạy ứng dụng:
-- **Chạy nội bộ:** Chạy lệnh:
+### Cách sử dụng & Chạy ứng dụng:
+- **Trải nghiệm Online (GitHub Pages):** Mở link [tandev282.github.io/animations-cozmo-video](https://tandev282.github.io/animations-cozmo-video/) trên bất kỳ trình duyệt nào (không cần cài đặt gì thêm).
+- **Chạy nội bộ (Offline/Local):** Chạy lệnh:
   ```bash
   python run_viewer.py
   ```
   Máy chủ nội bộ sẽ tự động khởi động và mở giao diện trên trình duyệt tại `http://localhost:8000/index.html`.
 - **Deploy lên Hosting (GitHub Pages / Vercel / Netlify):** 
-  - **GitHub Pages:** Do `index.html` nằm ở thư mục gốc, bạn chỉ cần kích hoạt GitHub Pages từ nhánh `main` (chọn root `/`) là trang web sẽ hoạt động ngay lập tức!
+  - **GitHub Pages:** Do `index.html` nằm ở thư mục gốc, chỉ cần kích hoạt GitHub Pages từ nhánh `main` (chọn root `/`) là trang web sẽ tự động build và online!
   - **Vercel / Netlify:** Kết nối repository và deploy trực tiếp mà không cần cấu hình build step.
   - Không cần lưu trữ video trên host giúp tiết kiệm hơn **99.9%** dung lượng!
 
